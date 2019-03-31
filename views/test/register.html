@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+<h1>This is register page!</h1>
+<form action="register" method="post">
+    {{.xsrfdata}}
+    User name: <input type="text" name="name" />
+    Password: <input type="text" name="pwd" />
+    <input type="submit" value="Submit" />
+</form>
+<a href="http://127.0.0.1:9090/login">login</a>
+</body>
+</html>

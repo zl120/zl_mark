@@ -13,3 +13,8 @@ func (c *MainController) Get() {
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
 }
+
+//judge that request whether a net attack?
+func (c *MainController) isNetAttack() error {
+	return nil
+}

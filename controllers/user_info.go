@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego"
 	"zl_mark/models/vo"
 	"zl_mark/service"
+	"zl_mark/utils"
 )
 
 type UserInfoController struct {
-	beego.Controller
+	MainController
 	Id          int
 	Name        string
 	Age         int
@@ -20,21 +20,27 @@ type UserInfoController struct {
 	Tel         string
 }
 
-//judge that request whether a net attack?
-func (c *UserInfoController) isNetAttack() error {
-	return nil
-}
-
-func (c *UserInfoController) CreateUserAccount() {
+func (c *UserInfoController) CreateUserInfo() {
+	var data map[string]interface{}
 	if err := c.isNetAttack(); err!=nil{
-		c.Data["json"] = "error"
+		data["code"] = "failed"
+		data["error"] = err.Error()
+		c.Data["json"],err = utils.DataToMap(data)
+		if err != nil {
+			c.Data["json"] = "unknown error"
+		}
 		return
 	}
 	var userSrc *service.UserInfoService = &service.UserInfoService{}
 	var user *vo.UserInfo = &vo.UserInfo{}
 	input:=c.Ctx.Input.RequestBody
 	if err:=json.Unmarshal(input,&user);err!=nil{
-		c.Data["json"] = "error"
+		data["code"] = "failed"
+		data["error"] = err.Error()
+		c.Data["json"],err = utils.DataToMap(data)
+		if err != nil {
+			c.Data["json"] = "unknown error"
+		}
 		return
 	}
 	userSrc.Name = user.Name
@@ -44,7 +50,12 @@ func (c *UserInfoController) CreateUserAccount() {
 	userSrc.Gender = user.Gender
 	id,err:=userSrc.CreateUserInfo()
 	if err != nil {
-		c.Data["json"] = "error"
+		data["code"] = "failed"
+		data["error"] = err.Error()
+		c.Data["json"],err = utils.DataToMap(data)
+		if err != nil {
+			c.Data["json"] = "unknown error"
+		}
 		return
 	}
 	c.Data["json"] = id

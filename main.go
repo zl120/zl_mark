@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "zl_mark/routers"
 	"github.com/astaxie/beego"
 	_ "github.com/go-sql-driver/mysql"
+	_ "zl_mark/routers"
 )
 
 func main() {

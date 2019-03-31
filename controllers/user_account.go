@@ -1,15 +1,14 @@
 package controllers
 
 import (
-	"encoding/json"
-	"github.com/astaxie/beego"
+	"fmt"
 	"strconv"
-	"zl_mark/models/vo"
 	"zl_mark/service"
+	"zl_mark/utils"
 )
 
 type UserAccountController struct {
-	beego.Controller
+	MainController
 	Id          int
 	Name        string
 	Pwd         string
@@ -18,27 +17,55 @@ type UserAccountController struct {
 	Status      int
 	Description string
 	Role        string
-
 }
 
-func (c *UserAccountController) CreateUserAccount()  {
-	input:=c.Ctx.Input.RequestBody
-	var user  *vo.UserAccount = &vo.UserAccount{}
-	if err:=json.Unmarshal(input,user);err!=nil{
-		c.Data["error"] = ""
-		c.Data["json"] = ""
+func (c *UserAccountController) Register() {
+	var data map[string]interface{} = make(map[string]interface{})
+	var err error
+	defer func() {
+		if err != nil {
+			data["code"] = "failed"
+			data["error"] = err.Error()
+		} else {
+			data["code"] = "success"
+		}
+		c.Data["json"], err = utils.DataToMap(data)
+		if err != nil {
+			c.Data["json"] = "unknown error"
+		}
+		c.ServeJSON()
+	}()
+	name := c.Ctx.Request.FormValue("name")
+	pwd := c.Ctx.Request.FormValue("pwd")
+	var userSrc *service.UserAccountService = &service.UserAccountService{Name:name,Pwd:pwd}
+	var id int
+	id, err = userSrc.CreateUserAccount();
+	if err != nil {
 		return
 	}
-	var userSrc *service.UserAccountService = &service.UserAccountService{}
-	userSrc.Name = user.Name
-	userSrc.Pwd = user.Pwd
-	id,err:=userSrc.CreateUserAccount();
-	if err!=nil{
-		c.Data["error"] = ""
-		c.Data["json"] = ""
+	data["id"] = strconv.Itoa(id)
+}
+
+func (c *UserAccountController) Login() {
+	var data map[string]interface{} = make(map[string]interface{})
+	var err error
+	defer func() {
+		if err != nil {
+			data["code"] = "failed"
+			data["error"] = err.Error()
+			c.Data["json"], err = utils.DataToMap(data)
+			if err != nil {
+				c.Data["json"] = "unknown error"
+			}
+			fmt.Println("json")
+			c.ServeJSON()
+		}
+	}()
+	name := c.Ctx.Request.FormValue("name")
+	pwd := c.Ctx.Request.FormValue("pwd")
+	var userSrv *service.UserAccountService = &service.UserAccountService{Name: name, Pwd: pwd}
+	if err = userSrv.Login(); err != nil {
 		return
 	}
-	c.Data["error"] = ""
-	c.Data["json"] = "id"+strconv.Itoa(id)
-	return
+	c.TplName = "test/home.html"
 }

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <h1>This is login page</h1>
+    <form action="login" method="post">
+        {{.xsrfdata}}
+        User name: <input type="text" name="name"/>
+        Password: <input type="text" name="pwd"/>
+        <input type="submit" value="Submit"/>
+    </form>
+    <a href="http://127.0.0.1:9090/register">register</a>
+    <a style="margin-left: 50px" href="http://127.0.0.1:9090/forget-pwd">forget password</a>
+</body>
+</html>
